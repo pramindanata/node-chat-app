@@ -27,10 +27,10 @@ io.on('connection', (socket) => {
   });
 
   socket.on('createMessage', (data) => {
-    socket.emit('newMessage', {
+    io.emit('newMessage', {
       from: data.from,
       text: data.text,
-      created_at: new Date(),
+      created_at: new Date().getTime(),
     });
   });
 });
