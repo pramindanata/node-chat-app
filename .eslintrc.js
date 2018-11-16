@@ -5,6 +5,6 @@ module.exports = {
         mocha: true,
     },
     "globals": {
-        "io": true
+        "io": true,
     }
 };

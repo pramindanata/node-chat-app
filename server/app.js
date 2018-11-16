@@ -25,17 +25,19 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
   console.log('User connected');
 
-  socket.on('createMessage', (data) => {
+  socket.on('createMessage', (data, callback) => {
     io.emit('newMessage', generateMessage(data.from, data.text));
 
     // socket.broadcast.emit('newMessage', generateMessage(data.from, data.text));
+
+    callback('This is from the server.');
   });
 
   socket.on('disconnect', () => {
     console.log('User disconnected');
   });
 
-  socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'.text));
+  socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
 
   socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user connected'));
 });
