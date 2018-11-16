@@ -3,6 +3,7 @@ module.exports = {
     "env": {
         node: true,
         mocha: true,
+        browser: true,
     },
     "globals": {
         "io": true,
