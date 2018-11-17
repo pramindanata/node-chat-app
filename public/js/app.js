@@ -10,16 +10,18 @@ document.addEventListener('DOMContentLoaded', () => {
   // ## Append new message to DOM
   const appendMessage = (data) => {
     const li = document.createElement('li');
+    const time = moment(data.created_at).format('h:mm A');
 
-    li.innerHTML = `<strong>${data.from}</strong>: ${data.text}`;
+    li.innerHTML = `<strong>${data.from}</strong> ${time}: ${data.text}`;
     messagesList.appendChild(li);
   };
 
   // ## Append new location message to DOM
   const appendLocationMessage = (data) => {
     const li = document.createElement('li');
+    const time = moment(data.created_at).format('h:mm A');
 
-    li.innerHTML = `<strong>${data.from}</strong>: <a href="${data.url}" target="_blank">My current location</a>`;
+    li.innerHTML = `<strong>${data.from}</strong> ${time}: <a href="${data.url}" target="_blank">My current location</a>`;
     messagesList.appendChild(li);
   };
 
