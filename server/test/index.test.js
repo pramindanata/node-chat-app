@@ -1,6 +1,6 @@
 const expect = require('expect');
 
-describe('Test', () => {
+describe('# Test', () => {
   it('Dummy test', () => {
     expect(1).toBe(1);
   });
