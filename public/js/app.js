@@ -24,22 +24,24 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // ## IO - Emit create message
-  const emitCreateMsg = (message) => {
+  const emitCreateMsg = message => new Promise((resolve) => {
     socket.emit('createMessage', {
       from: 'User',
       text: message,
     }, (data) => {
-      console.log('Got it.', data);
+      resolve(data);
     });
-  };
+  });
 
   // ## IO - Emit location message
-  const emitLocationMsg = (position) => {
+  const emitLocationMsg = position => new Promise((resolve) => {
     socket.emit('createLocationMessage', {
       latitude: position.coords.latitude,
       longitude: position.coords.longitude,
+    }, () => {
+      resolve();
     });
-  };
+  });
 
   // ## Init geolocation
   const geoInit = () => new Promise((resolve, reject) => {
@@ -59,25 +61,41 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // ## Reset location button
+  const resetLocationBtn = () => {
+    locationBtn.textContent = 'Send Location';
+    locationBtn.removeAttribute('disabled');
+  };
+
   // # Listener list
   // ## Listen message form's submit event
   messageForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    const message = document.querySelector('input[name="message"]').value;
+    const messageInput = document.querySelector('input[name="message"]');
+    const message = messageInput.value;
 
-    emitCreateMsg(message);
+    emitCreateMsg(message)
+      .then(() => {
+        messageInput.value = '';
+      });
   });
 
   // ## Listen location button's click event
   locationBtn.addEventListener('click', () => {
+    locationBtn.setAttribute('disabled', true);
+    locationBtn.textContent = 'Sending Location...';
+
     geoInit()
       .then(() => geoGetCurrentPos())
-      .then((position) => {
-        emitLocationMsg(position);
+      .then(position => emitLocationMsg(position))
+      .then(() => {
+        resetLocationBtn();
       })
       .catch((err) => {
         alert(err);
+
+        resetLocationBtn();
       });
   });
 
