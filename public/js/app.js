@@ -9,20 +9,29 @@ document.addEventListener('DOMContentLoaded', () => {
   // # Function list
   // ## Append new message to DOM
   const appendMessage = (data) => {
-    const li = document.createElement('li');
     const time = moment(data.created_at).format('h:mm A');
+    const template = document.querySelector('#message-template').innerHTML;
+    const html = Mustache.render(template, {
+      from: data.from,
+      text: data.text,
+      createdAt: time,
+    });
 
-    li.innerHTML = `<strong>${data.from}</strong> ${time}: ${data.text}`;
-    messagesList.appendChild(li);
+    messagesList.insertAdjacentHTML('beforeend', html);
   };
 
   // ## Append new location message to DOM
   const appendLocationMessage = (data) => {
-    const li = document.createElement('li');
     const time = moment(data.created_at).format('h:mm A');
+    const template = document.querySelector('#message-loc-template').innerHTML;
+    const html = Mustache.render(template, {
+      from: data.from,
+      text: 'My current position.',
+      url: data.url,
+      createdAt: time,
+    });
 
-    li.innerHTML = `<strong>${data.from}</strong> ${time}: <a href="${data.url}" target="_blank">My current location</a>`;
-    messagesList.appendChild(li);
+    messagesList.insertAdjacentHTML('beforeend', html);
   };
 
   // ## IO - Emit create message

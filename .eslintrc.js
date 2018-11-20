@@ -8,5 +8,6 @@ module.exports = {
     "globals": {
         "io": true,
         "moment": true,
+        "Mustache": true,
     }
 };
