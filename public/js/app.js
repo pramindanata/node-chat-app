@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // # Function list
   // ## Append new message to DOM
-  const appendMessage = (data) => {
+  function appendMessage(data) {
     const time = moment(data.created_at).format('h:mm A');
     const template = document.querySelector('#message-template').innerHTML;
     const html = Mustache.render(template, {
@@ -18,10 +18,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     messagesList.insertAdjacentHTML('beforeend', html);
-  };
+  }
 
   // ## Append new location message to DOM
-  const appendLocationMessage = (data) => {
+  function appendLocationMessage(data) {
     const time = moment(data.created_at).format('h:mm A');
     const template = document.querySelector('#message-loc-template').innerHTML;
     const html = Mustache.render(template, {
@@ -32,51 +32,72 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     messagesList.insertAdjacentHTML('beforeend', html);
-  };
+  }
 
   // ## IO - Emit create message
-  const emitCreateMsg = message => new Promise((resolve) => {
-    socket.emit('createMessage', {
-      from: 'User',
-      text: message,
-    }, (data) => {
-      resolve(data);
+  function emitCreateMsg(message) {
+    return new Promise((resolve) => {
+      socket.emit('createMessage', {
+        from: 'User',
+        text: message,
+      }, (data) => {
+        resolve(data);
+      });
     });
-  });
+  }
 
   // ## IO - Emit location message
-  const emitLocationMsg = position => new Promise((resolve) => {
-    socket.emit('createLocationMessage', {
-      latitude: position.coords.latitude,
-      longitude: position.coords.longitude,
-    }, () => {
-      resolve();
+  function emitLocationMsg(position) {
+    return new Promise((resolve) => {
+      socket.emit('createLocationMessage', {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+      }, () => {
+        resolve();
+      });
     });
-  });
+  }
 
   // ## Init geolocation
-  const geoInit = () => new Promise((resolve, reject) => {
-    if (!navigator.geolocation) {
-      reject(new Error('Geolocation not supported by your browser.'));
-    } else {
-      resolve();
-    }
-  });
+  function geoInit() {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        reject(new Error('Geolocation not supported by your browser.'));
+      } else {
+        resolve();
+      }
+    });
+  }
 
   // ## Get current location position
-  const geoGetCurrentPos = () => new Promise((resolve, reject) => {
-    navigator.geolocation.getCurrentPosition((position) => {
-      resolve(position);
-    }, () => {
-      reject(new Error('Unable to fetch location.'));
+  function geoGetCurrentPos() {
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition((position) => {
+        resolve(position);
+      }, () => {
+        reject(new Error('Unable to fetch location.'));
+      });
     });
-  });
+  }
 
   // ## Reset location button
-  const resetLocationBtn = () => {
+  function resetLocationBtn() {
     locationBtn.textContent = 'Send Location';
     locationBtn.removeAttribute('disabled');
-  };
+  }
+
+  // ## Scroll to the bottom of the last message
+  function scrollToBottom() {
+    const lastMessage = messagesList.lastElementChild;
+    const lastMessageHeight = lastMessage.clientHeight;
+    const { scrollHeight, scrollTop, clientHeight } = document.querySelector('#messages');
+
+    if (scrollHeight <= (scrollTop + clientHeight + lastMessageHeight)) {
+      messagesList.scrollTop = messagesList.scrollHeight;
+    }
+
+    return false;
+  }
 
   // # Listener list
   // ## Listen message form's submit event
@@ -124,10 +145,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // ## Socket, new message listener
   socket.on('newMessage', (data) => {
     appendMessage(data);
+    scrollToBottom();
   });
 
   // ## Socket, new message listener
   socket.on('newLocationMessage', (data) => {
     appendLocationMessage(data);
+    scrollToBottom();
   });
 });
