@@ -29,15 +29,22 @@ io.on('connection', (socket) => {
   console.log('User connected');
 
   socket.on('createMessage', (data, callback) => {
-    io.emit('newMessage', generateMessage(data.from, data.text));
+    const user = users.getUser(socket.id);
+
+    if (user && isRealString(data.text)) {
+      io.to(user.room).emit('newMessage', generateMessage(user.name, data.text));
+    }
 
     // socket.broadcast.emit('newMessage', generateMessage(data.from, data.text));
-
-    callback('This is from the server.');
+    callback();
   });
 
   socket.on('createLocationMessage', (coords, callback) => {
-    io.emit('newLocationMessage', generateLocationMessage('User', coords.latitude, coords.longitude));
+    const user = users.getUser(socket.id);
+
+    if (user) {
+      io.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name, coords.latitude, coords.longitude));
+    }
 
     callback();
   });
