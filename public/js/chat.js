@@ -99,6 +99,22 @@ document.addEventListener('DOMContentLoaded', () => {
     return false;
   }
 
+  // ## Update user list
+  function updateUserList(users) {
+    const usersWrapper = document.querySelector('#users');
+    const ol = document.createElement('ol');
+
+    users.forEach((user) => {
+      const li = document.createElement('li');
+
+      li.textContent = user;
+      ol.append(li);
+    });
+
+    usersWrapper.innerHTML = '';
+    usersWrapper.append(ol);
+  }
+
   // # Listener list
   // ## Listen message form's submit event
   messageForm.addEventListener('submit', (e) => {
@@ -134,12 +150,24 @@ document.addEventListener('DOMContentLoaded', () => {
   // # Immediately invoked socket listener
   // ## Socket, connect listener
   socket.on('connect', () => {
-    console.log('Connected to server');
+    const params = window.deparam(window.location.search);
+
+    socket.emit('join', params, (err) => {
+      if (err) {
+        alert(err);
+        window.location.href = '/';
+      }
+    });
   });
 
   // ## Socket, disconnect listener
   socket.on('disconnect', () => {
     console.log('Disconnected from server');
+  });
+
+  // ## Socket, update user listener
+  socket.on('updateUserList', (users) => {
+    updateUserList(users);
   });
 
   // ## Socket, new message listener
